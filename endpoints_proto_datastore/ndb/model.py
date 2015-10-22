@@ -1241,12 +1241,14 @@ class EndpointsModel(ndb.Model):
 
     # elielhaouzi: see http://stackoverflow.com/a/12814719/1577537
     mapping = dict(alias_args)
-    alias_args[:] = [(x, mapping[x]) for x in cls._message_fields_schema if x in mapping]
+    for field_name in cls._message_fields_schema:
+      if field_name in mapping:
+        # Set alias properties, will fail on an alias property if that
+        # property was not defined with a setter
+        setattr(entity, field_name, mapping[field_name])
 
-    # Set alias properties, will fail on an alias property if that
-    # property was not defined with a setter
-    for name, value in alias_args:
-      setattr(entity, name, value)
+    # for name, value in alias_args:
+    #   setattr(entity, name, value)
 
     return entity
 
