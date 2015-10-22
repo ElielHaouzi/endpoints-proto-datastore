@@ -1247,6 +1247,8 @@ class EndpointsModel(ndb.Model):
         # property was not defined with a setter
         setattr(entity, field_name, mapping[field_name])
 
+    # Set alias properties, will fail on an alias property if that
+    # property was not defined with a setter
     # for name, value in alias_args:
     #   setattr(entity, name, value)
 
