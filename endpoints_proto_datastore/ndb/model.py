@@ -1239,16 +1239,10 @@ class EndpointsModel(ndb.Model):
     # sort of exception is only thrown when attempting to put the entity.
     entity = cls(**entity_kwargs)
 
-    def remove_duplicates(values):
-      output = []
+    def remove_duplicates(seq):
       seen = set()
-      for value in values:
-          # If value has not been encountered yet,
-          # ... add it to both list and set.
-          if value not in seen:
-              output.append(value)
-              seen.add(value)
-      return output
+      seen_add = seen.add
+      return [ x for x in seq if not (x in seen or seen_add(x))]
 
     # elielhaouzi: see http://stackoverflow.com/a/12814719/1577537
     mapping = dict(alias_args)
