@@ -726,6 +726,9 @@ class EndpointsModel(ndb.Model):
         # Only overwrite null values
         if isinstance(prop, EndpointsAliasProperty):
           value_set = getattr(self, attr_name) is not None
+        # elielhaouzi: Don't overwrite _ClassKeyProperty it is a Read-only prop
+        elif isinstance(prop, ndb.polymodel._ClassKeyProperty):
+          value_set = getattr(self, attr_name) is not None
         else:
           value_set = prop._name in self._values
         if not value_set:
@@ -1239,6 +1242,8 @@ class EndpointsModel(ndb.Model):
     # sort of exception is only thrown when attempting to put the entity.
     entity = cls(**entity_kwargs)
 
+    # elielhaouzi: order alias_args according to message_fields_schema order
+    # http://stackoverflow.com/a/480227
     def remove_duplicates(seq):
       seen = set()
       seen_add = seen.add
@@ -1250,7 +1255,6 @@ class EndpointsModel(ndb.Model):
       (x, mapping[x]) for x in cls._message_fields_schema if x in mapping
     ]
     alias_args = remove_duplicates(ordered_alias_args + alias_args)
-
 
     return entity
 
