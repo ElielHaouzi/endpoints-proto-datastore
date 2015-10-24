@@ -1239,6 +1239,17 @@ class EndpointsModel(ndb.Model):
     # sort of exception is only thrown when attempting to put the entity.
     entity = cls(**entity_kwargs)
 
+    def remove_duplicates(seq):
+      seen = set()
+      seen_add = seen.add
+      return [x for x in seq if not (x in seen or seen_add(x))]
+
+    mapping = dict(alias_args)
+    ordered_alias_args = [
+      (x, mapping[x]) for x in cls._message_fields_schema if x in mapping
+    ]
+    alias_args = remove_duplicates(ordered_alias_args + alias_args)
+
     # Set alias properties, will fail on an alias property if that
     # property was not defined with a setter
     for name, value in alias_args:
