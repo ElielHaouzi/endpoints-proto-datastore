@@ -1243,11 +1243,10 @@ class EndpointsModel(ndb.Model):
     entity = cls(**entity_kwargs)
 
     # elielhaouzi: order alias_args according to message_fields_schema order
-    # http://stackoverflow.com/a/480227
     def remove_duplicates(seq):
       seen = set()
       seen_add = seen.add
-      return [ x for x in seq if not (x in seen or seen_add(x))]
+      return [x for x in seq if not (x in seen or seen_add(x))]
 
     # elielhaouzi: see http://stackoverflow.com/a/12814719/1577537
     mapping = dict(alias_args)
@@ -1255,6 +1254,11 @@ class EndpointsModel(ndb.Model):
       (x, mapping[x]) for x in cls._message_fields_schema if x in mapping
     ]
     alias_args = remove_duplicates(ordered_alias_args + alias_args)
+
+    # Set alias properties, will fail on an alias property if that
+    # property was not defined with a setter
+    for name, value in alias_args:
+      setattr(entity, name, value)
 
     return entity
 
